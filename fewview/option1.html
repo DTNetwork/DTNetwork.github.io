@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/papaparse@5.3.0/papaparse.min.js"></script>
+    <script src="https://unpkg.com/@tweenjs/tween.js@18.6.4/dist/tween.umd.js"></script>
+
+    <style>
+        body {
+            overflow: hidden;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: red;
+        }
+
+        .buttonGroup {
+            position: absolute;
+            top: 15px;
+            left: 26px;
+            z-index: 10;
+        }
+
+        .filterHolder {
+            position: absolute;
+            top: 68px;
+            left: 26px;
+            width: 230px;
+            height: 312px;
+            background: #FFFFFF 0% 0% no-repeat padding-box;
+            box-shadow: 0px 3px 6px #00000029;
+            border-radius: 7px;
+            opacity: 1;
+            z-index: 10;
+            text-align: center;
+            font-family: Arial;
+        }
+
+        #routesFilter {
+            position: absolute;
+            top: 400px;
+            left: 26px;
+            width: 230px;
+            height: 60px;
+            background: #FFFFFF 0% 0% no-repeat padding-box;
+            box-shadow: 0px 3px 6px #00000029;
+            border-radius: 7px;
+            opacity: 1;
+            z-index: 10;
+            text-align: center;
+            font-family: Arial;
+            display: none;
+        }
+
+        button {
+            background-color: #001d76;
+            color: white;
+            border: 0px solid;
+            padding: 10px;
+            font: 'Arial';
+            font-size: 12px;
+            border-radius: 3px;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        #bottomBar {
+            width: 100%;
+            height: 400px;
+            display: none;
+            z-index: 3;
+            background-color: white;
+            font-family: Arial;
+        }
+
+        #containerBar {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: row;
+
+        }
+
+        #containerBar > div {
+            width: 400px;
+            height: 75%;
+            flex: 0 0 auto;
+            border: .5px solid rgba(72, 72, 72, 0.203);
+            border-radius: 10px;
+            background-color: white;
+            margin-right: 20px;
+            overflow-x: auto;
+            text-align: center;
+
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="buttonGroup"><button id="flows" class="active">Flows</button>
+        <button id="routes">Routes</button>
+        <button id="markers">Points of Interest</button>
+
+    </div>
+    <div class="filterHolder">filter place holder</div>
+    <div id="routesFilter">secondary location filter</div>
+    <div class="container">
+        <div id="map"></div>
+        <div id="bottomBar">
+            <p><button onClick="document.getElementById('bottomBar').style.display = 'none'">Hide Graphs</button>
+            <button>Supply Chain Data</button>
+            <button>Analytics Data</button></p>
+            <div id="containerBar">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="./CanvasFlowmapLayer.js"></script>
+    <script type="text/javascript" src="./world_countries_geojson.geojson"></script>
+    <script>
+        let hide;
+        var map = L.map('map').setView([0, 0], 3);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+        map.zoomControl.setPosition('topright');
+
+        let x = Papa.parse('./sampleData.csv', {
+            download: true,
+            header: true,
+            dynamicTyping: true,
+            skipEmptyLines: true,
+            complete: function (results) {
+                var geoJsonFeatureCollection = {
+                    type: 'FeatureCollection',
+                    features: results.data.map(function (datum) {
+                        return {
+                            type: 'Feature',
+                            geometry: {
+                                type: 'Point',
+                                coordinates: [datum.s_lon, datum.s_lat]
+                            },
+                            properties: datum
+                        }
+                    })
+                };
+
+
+                var oneToManyFlowmapLayer = L.canvasFlowmapLayer(geoJsonFeatureCollection, {
+                    originAndDestinationFieldIds: {
+                        originUniqueIdField: 's_city_id',
+                        originGeometry: {
+                            x: 's_lon',
+                            y: 's_lat'
+                        },
+                        destinationUniqueIdField: 'e_city_id',
+                        destinationGeometry: {
+                            x: 'e_lon',
+                            y: 'e_lat'
+                        }
+                    },
+                    pathDisplayMode: 'all',
+                    animationStarted: true,
+                    animationEasingFamily: 'Cubic',
+                    animationEasingType: 'In',
+                    animationDuration: 2000
+                }).addTo(map);
+
+                let features = geoJsonFeatureCollection.features
+
+
+                var endIcons = L.icon({
+                    iconUrl: './PortsEnd.svg',
+                    iconSize: [25, 25],
+
+                });
+
+                var poi = L.icon({
+                    iconUrl: './ports.svg',
+                    iconSize: [36, 36]
+                })
+
+
+                for (let x = 0; x < features.length; x++) {
+
+                    L.marker([features[x].properties.e_lat, features[x].properties.e_lon], {
+                        icon: endIcons
+                    }).addTo(map)
+                        .bindPopup(`Data for:  ${features[x].properties.e_City}, ${features[x].properties.e_country} <br/>Sample Data:  <b>XXX</b><br/>Sample Data: <b>XXX</b><br/><button id="${features[x].properties.e_City}" onClick="seeMore('${features[x].properties.e_City}')">See More Info</button>`);
+                }
+
+                oneToManyFlowmapLayer.on('click', function (e) {
+                    if (e.sharedOriginFeatures.length) {
+                        oneToManyFlowmapLayer.selectFeaturesForPathDisplay(e.sharedOriginFeatures, 'SELECTION_NEW');
+                    }
+                    if (e.sharedDestinationFeatures.length) {
+                        oneToManyFlowmapLayer.selectFeaturesForPathDisplay(e.sharedDestinationFeatures, 'SELECTION_NEW');
+                    }
+                });
+
+                //set a default
+                oneToManyFlowmapLayer.selectFeaturesForPathDisplayById('s_city_id', 451, true, 'SELECTION_NEW');
+
+                document.getElementById('flows').addEventListener('click', function () {
+                    oneToManyFlowmapLayer.selectFeaturesForPathDisplayById('s_city_id', 451, true, 'SELECTION_NEW')
+                    hide = true;
+                    document.getElementById('routesFilter').style.display = 'none'
+
+                })
+
+                document.getElementById('routes').addEventListener('click', function () {
+                    oneToManyFlowmapLayer.selectAllFeaturesForPathDisplay();
+                    hide = false;
+                    document.getElementById('routesFilter').style.display = 'block'
+
+                })
+
+                document.getElementById('markers').addEventListener('click', async function () {
+                    const fileName = "./ports.json"
+                    try {
+                        const response = await fetch(fileName);
+                        if (!response.ok) {
+                            throw new Error(`Response status: ${response.status}`);
+                        }
+
+                        // I got my server PROMISE, let's UNWRAP
+                        const json = await response.json();
+                        if (hide) {
+                            location.reload();
+                        }
+
+                        else {
+                            for (let x in json.features) {
+                                L.marker([json.features[x].geometry.coordinates[1], json.features[x].geometry.coordinates[0]], {
+                                    icon: poi
+
+                                }).addTo(map)
+                                .bindPopup(`Data for:  ${json.features[x].properties.NameWoDiac} <br/> Outflows: <b> ${json.features[x].properties.outflows}</b><br/><button id=" ${json.features[x].properties.NameWoDiac}" onClick="seeMore(' ${json.features[x].properties.NameWoDiac}')">See More Info</button>`); 
+                            }
+                            hide = true;
+                        }
+
+                    } catch (error) {
+                        console.error(error.message);
+                    }
+
+
+                })
+
+
+
+            }
+
+
+
+        });
+
+
+        fetch('./world_countries_geojson.geojson')
+            .then(response => response.json())
+            .then(data => {
+
+
+                const geoJSONStyle = {
+                    color: 'rgba(255, 0, 51,.5)',
+                    opacity: .2,
+                    lineWidth: .5,
+                    stroke: .5,
+                    zIndex: -10
+                }
+                L.geoJSON(data, {
+                    style: geoJSONStyle
+                }).addTo(map);
+            })
+
+        function seeMore(value) {
+            document.getElementById('bottomBar').style.display = "block"
+            let divElements = document.querySelectorAll('#containerBar > div')
+            divElements[0].style.marginLeft = '10px'
+            divElements.forEach((element) => {
+                element.innerHTML = `graph for trade ${value}`
+                console.log(element);
+            });
+
+        }
+    </script>
+</body>
+
+</html>

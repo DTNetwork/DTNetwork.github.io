@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="138.001" height="118" viewBox="0 0 138.001 118">
+  <defs>
+    <filter id="Union_3" x="0" y="0" width="138.001" height="103.001" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Ports_Hover_State_" data-name="Ports (Hover State)" transform="translate(9 6)">
+    <g id="Ellipse_91" data-name="Ellipse 91" transform="translate(48 87)" fill="#4b9af7" stroke="#fff" stroke-width="1">
+      <circle cx="12.5" cy="12.5" r="12.5" stroke="none"/>
+      <circle cx="12.5" cy="12.5" r="12" fill="none"/>
+    </g>
+    <path id="directions_boat_FILL1_wght300_GRAD0_opsz24" d="M91.455-880.585l-1.165-4.181a.76.76,0,0,1,.037-.428.5.5,0,0,1,.336-.324l.908-.314v-3.117a1.218,1.218,0,0,1,.367-.9,1.218,1.218,0,0,1,.9-.366h2.229v-2.094h3.491v2.094h2.229a1.218,1.218,0,0,1,.9.366,1.218,1.218,0,0,1,.367.9v3.117l.908.314a.573.573,0,0,1,.376.343.68.68,0,0,1,.024.409l-1.192,4.181a3.243,3.243,0,0,1-1.363-.5,6.064,6.064,0,0,1-1.2-1.057,6.314,6.314,0,0,1-1.249,1.11,2.7,2.7,0,0,1-1.543.461,2.7,2.7,0,0,1-1.543-.461,6.315,6.315,0,0,1-1.249-1.11,5.867,5.867,0,0,1-1.192,1.057A3.268,3.268,0,0,1,91.455-880.585ZM90-877.779v-1.047h1.222a4.767,4.767,0,0,0,1.449-.227,4.723,4.723,0,0,0,1.344-.681,4.389,4.389,0,0,0,1.344.663,5.134,5.134,0,0,0,1.449.209,5.134,5.134,0,0,0,1.449-.209,4.389,4.389,0,0,0,1.344-.663,4.723,4.723,0,0,0,1.344.681,4.767,4.767,0,0,0,1.449.227h1.222v1.047h-1.222a5.88,5.88,0,0,1-1.431-.175,6.086,6.086,0,0,1-1.361-.524,6.04,6.04,0,0,1-1.37.524,5.912,5.912,0,0,1-1.422.175,5.912,5.912,0,0,1-1.422-.175,6.04,6.04,0,0,1-1.37-.524,6.08,6.08,0,0,1-1.361.524,5.877,5.877,0,0,1-1.431.175H90Zm2.618-8.4,4.189-1.361L101-886.179v-2.771a.209.209,0,0,0-.06-.154.209.209,0,0,0-.154-.06H92.833a.209.209,0,0,0-.154.06.209.209,0,0,0-.06.154Z" transform="translate(-36.307 984.543)" fill="#fff"/>
+    <g id="Group_2240" data-name="Group 2240" transform="translate(-1520 -1069)">
+      <g transform="matrix(1, 0, 0, 1, 1511, 1063)" filter="url(#Union_3)">
+        <path id="Union_3-2" data-name="Union 3" d="M51.766,75H12A12,12,0,0,1,0,63V12A12,12,0,0,1,12,0h96a12,12,0,0,1,12,12V63a12,12,0,0,1-12,12H68.234L60,85Z" transform="translate(9 6)" fill="#fff"/>
+      </g>
+      <text id="_Location_Port" data-name="[Location] Port" transform="translate(1530 1091)" font-size="14" font-family="Arial-BoldMT, Arial" font-weight="700"><tspan x="0" y="0">[Location] Port</tspan></text>
+    </g>
+    <g id="Group_2253" data-name="Group 2253" transform="translate(-53.4 -289)">
+      <rect id="Rectangle_979" data-name="Rectangle 979" width="102.2" height="23" rx="4" transform="translate(62.8 330)" fill="#3653f5"/>
+      <text id="View_in_TACCS_" data-name="View in TACCS™" transform="translate(81 345)" fill="#fff" font-size="10" font-family="ArialMT, Arial"><tspan x="0" y="0">View in TACCS™</tspan></text>
+      <path id="open_in_new_FILL0_wght400_GRAD0_opsz24" d="M120.889-832a.856.856,0,0,1-.628-.261.856.856,0,0,1-.261-.628v-6.222a.856.856,0,0,1,.261-.628.856.856,0,0,1,.628-.261H124v.889h-3.111v6.222h6.222V-836H128v3.111a.856.856,0,0,1-.261.628.856.856,0,0,1-.628.261Zm2.089-2.356-.622-.622,4.133-4.133h-1.6V-840H128v3.111h-.889v-1.6Z" transform="translate(-51.2 1177.5)" fill="#fff"/>
+    </g>
+  </g>
+</svg>
