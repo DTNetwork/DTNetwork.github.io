@@ -22,6 +22,9 @@
         .container {
             width: 100vw;
             height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: red;
         }
 
         .buttonGroup {
@@ -46,7 +49,7 @@
             font-family: Arial;
         }
 
-        #routesFilter{
+        #routesFilter {
             position: absolute;
             top: 400px;
             left: 26px;
@@ -80,47 +83,85 @@
 
         #bottomBar {
             width: 100%;
-            height: 25%;
+            height: 400px;
             display: none;
             z-index: 3;
             background-color: white;
             font-family: Arial;
         }
 
-        #viewMore{
-            width: 100vw;
-            height: 100vh; 
-            position: absolute; 
-            top: 0px; 
-            left: 0px;
-            background-color: rgba(48, 48, 48, .5);
-            z-index: 15;
-            display: none;
-
+        #containerBar {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: row;
         }
 
-        #viewMore > div {
-            position: relative; 
-            top: 50%; 
-            left: 50%; 
+        #containerBar>div {
+            width: 400px;
+            height: 75%;
+            flex: 0 0 auto;
+            border: .5px solid rgba(72, 72, 72, 0.203);
+            border-radius: 10px;
+            background-color: white;
+            margin-right: 20px;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        #modalView {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(72, 72, 72, 0.5);
+            z-index: 20;
+            display: none; 
+        }
+
+        #modalView>div {
+            position: relative;
+            top: 50%;
+            left: 50%;
             transform: translate(-50%, -50%);
-            width: 786px;
+            width: 800px;
             height: 572px;
             /* UI Properties */
             background: #FFFFFF 0% 0% no-repeat padding-box;
             box-shadow: 0px 3px 6px #00000029;
             border-radius: 8px;
             opacity: 1;
-            z-index: 20; 
+            padding: 32px;
+            display: grid;
+            grid-template-columns: 400px 400px;
         }
 
+        #modalView>div>div {
+            width: 351px;
+            height: 200px;
+            /* UI Properties */
+            background: rgba(255, 255, 255, 1) 0% 0% no-repeat padding-box;
+            border: 0.5px solid rgba(177, 177, 177, 1);
+            border-radius: 7px;
+            opacity: 1;
+            margin-right: 20px;
+            padding: 20px;
+        }
     </style>
 </head>
 
 <body>
 
-    <div id="viewMore">
-        <div>sample div</div>
+    <div id="modalView">
+        <div>
+            <h2 id="header">placeholder</h2>
+            <span style="position: relative; top: 0px; left: 75%;"><button onclick="closeModal(document.getElementById('modalView'))">close modal</button></span>
+            <div>overview graphs</div>
+            <div>top commodities overview</div>
+            <div>graph</div>
+            <div>graph</div>
+        </div>
     </div>
     <div class="buttonGroup"><button id="flows" class="active">Flows</button>
         <button id="routes">Routes</button>
@@ -132,8 +173,11 @@
     <div class="container">
         <div id="map"></div>
         <div id="bottomBar">
-            placeholder for graphs
-            <p><button onClick="document.getElementById('bottomBar').style.display = 'none'">Hide Graphs</button></p>
+            <p><button onClick="document.getElementById('bottomBar').style.display = 'none'">Hide Graphs</button>
+            </p>
+            <div id="containerBar">
+                
+            </div>
         </div>
 
     </div>
@@ -141,14 +185,32 @@
     <script src="./CanvasFlowmapLayer.js"></script>
     <script type="text/javascript" src="./world_countries_geojson.geojson"></script>
     <script>
+        let hide;
         var map = L.map('map').setView([0, 0], 3);
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
-
-
         map.zoomControl.setPosition('topright');
+
+        var popup = L.popup();
+
+        function onMapClick(e) {
+            console.log(e.latlng)
+            fetch(`https://nominatim.openstreetmap.org/reverse.php?lat=${e.latlng.lat}&lon=${e.latlng.lng}&zoom=10&format=jsonv2`)
+                .then(response => response.json())
+                .then(data => {
+                    popup
+                        .setLatLng(e.latlng)
+                        .setContent(`Data for ${data.display_name} <br/>
+                    Sample Data: <b>XXX</b><br/>
+                    Sample Data: <b>XXX</b><br/>
+                    <button id='${data.display_name}' onClick="seeMore('${data.display_name}')">See More Info</button> <button>See Routes</button>`)
+                        .openOn(map);
+                })
+        }
+
+        map.on('click', onMapClick)
 
         let x = Papa.parse('./sampleData.csv', {
             download: true,
@@ -169,8 +231,6 @@
                         }
                     })
                 };
-
-                console.log(geoJsonFeatureCollection)
 
 
                 var oneToManyFlowmapLayer = L.canvasFlowmapLayer(geoJsonFeatureCollection, {
@@ -209,10 +269,11 @@
 
 
                 for (let x = 0; x < features.length; x++) {
+
                     L.marker([features[x].properties.e_lat, features[x].properties.e_lon], {
                         icon: endIcons
                     }).addTo(map)
-                        .bindPopup(`Data for:  ${features[x].properties.e_City}, ${features[x].properties.e_country} <br/>Sample Data:  <b>XXX</b><br/>Sample Data: <b>XXX</b><br/><button id="${[features[x].properties.e_lat, features[x].properties.e_long]}" onClick="seeTrade(this)">See Trade Info</button> <button id="${[features[x].properties.e_lat, features[x].properties.e_long]}" onClick="seeRoute(this)">See Route Info</button>`);
+                        .bindPopup(`Data for:  ${features[x].properties.e_City}, ${features[x].properties.e_country} <br/>Sample Data:  <b>XXX</b><br/>Sample Data: <b>XXX</b><br/><button id="${features[x].properties.e_City}" onClick="seeMore('${features[x].properties.e_City}')">See More Info</button>`);
                 }
 
                 oneToManyFlowmapLayer.on('click', function (e) {
@@ -243,7 +304,6 @@
 
                 document.getElementById('markers').addEventListener('click', async function () {
                     const fileName = "./ports.json"
-                    console.log(hide)
                     try {
                         const response = await fetch(fileName);
                         if (!response.ok) {
@@ -251,9 +311,7 @@
                         }
 
                         // I got my server PROMISE, let's UNWRAP
-                        console.log(response);
                         const json = await response.json();
-                        console.log(json.features);
                         if (hide) {
                             location.reload();
                         }
@@ -263,7 +321,8 @@
                                 L.marker([json.features[x].geometry.coordinates[1], json.features[x].geometry.coordinates[0]], {
                                     icon: poi
 
-                                }).addTo(map);
+                                }).addTo(map)
+                                    .bindPopup(`Data for:  ${json.features[x].properties.NameWoDiac} <br/> Outflows: <b> ${json.features[x].properties.outflows}</b><br/><button id=" ${json.features[x].properties.NameWoDiac}" onClick="seeMore(' ${json.features[x].properties.NameWoDiac}')">See More Info</button>`);
                             }
                             hide = true;
                         }
@@ -301,12 +360,33 @@
                 }).addTo(map);
             })
 
+        function seeMore(value) {
+            document.getElementById('modalView').style.display = "block"
+            document.getElementById('header').innerHTML = `Commodity Information for ${value}`
+            let divElements = document.querySelectorAll('#modalView > div > div')
+            divElements.forEach((element) => {
+                element.innerHTML =`graph for trade ${value}`
+                element.innerHTML += `<br/><button onclick="saveData('${element.innerHTML}')">Save Graph</button>`
+            });
+        }
 
-    function seeMore(id){
-        document.getElementById('bottomBar').style.display = "block"
-    }
+        function saveData(header){
+            let newDiv = document.createElement('div')
+            let content = document.createTextNode(header)
+            newDiv.appendChild(content)
+            document.getElementById('bottomBar').style.display = 'block'
+            document.getElementById('containerBar').appendChild(newDiv)
 
+        }
 
+        function closeModal(id){
+            id.style.display = 'none';
+            let divElements = document.querySelectorAll('#modalView > div > div')
+            divElements.forEach((element) => {
+                element.innerHTML =""
+            });
+
+        }
     </script>
 </body>
 

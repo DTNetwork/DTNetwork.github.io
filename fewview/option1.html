@@ -148,6 +148,25 @@
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
         map.zoomControl.setPosition('topright');
+        
+        var popup = L.popup(); 
+
+        function onMapClick(e){
+            console.log(e.latlng)
+           fetch(`https://nominatim.openstreetmap.org/reverse.php?lat=${e.latlng.lat}&lon=${e.latlng.lng}&zoom=10&format=jsonv2`)
+            .then(response => response.json())
+            .then(data => {
+                popup
+                    .setLatLng(e.latlng)
+                    .setContent(`Data for ${data.display_name} <br/>
+                    Sample Data: <b>XXX</b><br/>
+                    Sample Data: <b>XXX</b><br/>
+                    <button id='${data.display_name}' onClick="seeMore('${data.display_name}')">See More Info</button> <button>See Routes</button>`)
+                    .openOn(map); 
+            })
+        }
+
+        map.on('click', onMapClick)
 
         let x = Papa.parse('./sampleData.csv', {
             download: true,
