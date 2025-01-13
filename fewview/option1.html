@@ -227,7 +227,7 @@
                 for (let x = 0; x < features.length; x++) {
 
                     L.marker([features[x].properties.e_lat, features[x].properties.e_lon], {
-                        icon: endIcons
+                        icon: poi
                     }).addTo(map)
                         .bindPopup(`Data for:  ${features[x].properties.e_City}, ${features[x].properties.e_country} <br/>Sample Data:  <b>XXX</b><br/>Sample Data: <b>XXX</b><br/><button id="${features[x].properties.e_City}" onClick="seeMore('${features[x].properties.e_City}')">See More Info</button>`);
                 }
@@ -275,7 +275,7 @@
                         else {
                             for (let x in json.features) {
                                 L.marker([json.features[x].geometry.coordinates[1], json.features[x].geometry.coordinates[0]], {
-                                    icon: poi
+                                    icon: endIcons
 
                                 }).addTo(map)
                                 .bindPopup(`Data for:  ${json.features[x].properties.NameWoDiac} <br/> Outflows: <b> ${json.features[x].properties.outflows}</b><br/><button id=" ${json.features[x].properties.NameWoDiac}" onClick="seeMore(' ${json.features[x].properties.NameWoDiac}')">See More Info</button>`); 
