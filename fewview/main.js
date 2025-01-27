@@ -106,7 +106,7 @@
                 element.innerHTML = `graph for trade ${value}`
             });
 
-            document.getElementById('filterHolder').innerHTML = `${value} added to filter`
+            document.getElementById('filterHolder').innerHTML = `${value} added to filter <br/> Now, try clicking another location! This will showcase that users can only look at trade info when there is a value in the location filter.`
 
            one = L.Polyline.Arc([lat, long], [lat+10, long-20], {
                 color: 'red',
@@ -160,12 +160,20 @@
             document.getElementById('flows').addEventListener('click', function () {
                 hide = true;
                 document.getElementById('routesFilter').style.display = 'none'
+                document.getElementById('routes').style.backgroundColor = 'transparent'
+                document.getElementById('routes').style.color = 'rgba(54, 83, 245, 1)'
+                document.getElementById('flows').style.backgroundColor = 'rgba(54, 83, 245, 1)'
+                document.getElementById('flows').style.color = 'white'
 
             })
 
             document.getElementById('routes').addEventListener('click', function () {
                 hide = false;
                 document.getElementById('routesFilter').style.display = 'block'
+                document.getElementById('flows').style.backgroundColor = 'transparent'
+                document.getElementById('flows').style.color = 'rgba(54, 83, 245, 1)'
+                document.getElementById('routes').style.backgroundColor = 'rgba(54, 83, 245, 1)'
+                document.getElementById('routes').style.color = 'white'
                
 
             })
